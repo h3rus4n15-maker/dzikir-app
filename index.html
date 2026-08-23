@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dzikir Pagi Petang - Lengkap & Interaktif</title>
+    <!-- manifest PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#059669">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['Amiri', 'Traditional Arabic', 'Scheherazade', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for Arabic & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            direction: rtl;
+        }
+        /* Custom scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Custom Pulse ring for active audio */
+        .active-audio-ring {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.5); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+    <!-- TOP PROGRESS BAR (STICKY) -->
+    <div class="sticky top-0 z-40 bg-white/95 dark:bg-slate-800/95 backdrop-blur shadow-md transition-colors duration-300">
+        <div class="max-w-md mx-auto px-4 py-3">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center space-x-2">
+                    <span id="time-icon" class="text-xl">☀️</span>
+                    <h1 id="app-title" class="font-bold text-lg text-emerald-600 dark:text-emerald-400">Dzikir Pagi</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Reset Button -->
+                    <button id="btn-reset" class="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Reset Hitungan">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+                        </svg>
+                    </button>
+                    <!-- Audio Toggle -->
+                    <button id="btn-sound" class="p-2 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Suara Ketukan">
+                        <svg id="sound-icon-on" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                        <svg id="sound-icon-off" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                        </svg>
+                    </button>
+                    <!-- Settings Button -->
+                    <button id="btn-settings" class="p-2 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Pengaturan">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Progress Bar Info -->
+            <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <span id="progress-text">Progres: 0/0 selesai</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <!-- Bar -->
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-md w-full mx-auto px-4 pb-24 pt-4">
+        
+        <!-- CATEGORY TABS -->
+        <div class="flex space-x-2 bg-slate-200/60 dark:bg-slate-800/60 p-1 rounded-xl mb-6 backdrop-blur">
+            <button id="tab-pagi" class="flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-300 shadow-sm">
+                <span>☀️</span>
+                <span>Dzikir Pagi</span>
+            </button>
+            <button id="tab-petang" class="flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <span>🌙</span>
+                <span>Dzikir Petang</span>
+            </button>
+        </div>
+
+        <!-- DHIKR LIST -->
+        <div id="dhikr-list" class="space-y-5">
+            <!-- Dynamic cards will be rendered here -->
+        </div>
+
+    </main>
+
+    <!-- SETTINGS DRAWER / DIALOG -->
+    <div id="settings-drawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden transition-opacity duration-300">
+        <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-slate-800 rounded-t-2xl p-6 shadow-xl transition-transform duration-300 translate-y-full" id="settings-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    <span>Pengaturan Tampilan</span>
+                </h3>
+                <button id="btn-close-settings" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-5">
+                <!-- Theme Toggle -->
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Tema Aplikasi</span>
+                    <button id="btn-theme-toggle" class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-lg text-sm transition">
+                        <span id="theme-icon-text">☀️ Terang</span>
+                    </button>
+                </div>
+
+                <!-- Font Size Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Ukuran Font Arab</span>
+                        <span id="font-size-label" class="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded font-bold">28px</span>
+                    </div>
+                    <input type="range" id="input-font-size" min="20" max="42" value="28" class="w-full accent-emerald-500 bg-slate-200 dark:bg-slate-700 rounded-lg h-2 appearance-none cursor-pointer">
+                </div>
+
+                <!-- Toggle Options -->
+                <div class="space-y-3 pt-2">
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm font-medium">Tampilkan Transliterasi (Latin)</span>
+                        <input type="checkbox" id="toggle-latin" checked class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                    </label>
+
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm font-medium">Tampilkan Terjemahan</span>
+                        <input type="checkbox" id="toggle-translation" checked class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                    </label>
+
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm font-medium">Tampilkan Faedah / Hadits</span>
+                        <input type="checkbox" id="toggle-benefit" checked class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                    </label>
+
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm font-medium">Auto Scroll Ke Kartu Berikutnya</span>
+                        <input type="checkbox" id="toggle-autoscroll" checked class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL AUDIO PLAYER -->
+    <audio id="global-audio-player" preload="none"></audio>
+
+    <!-- AUDIO ELEMENT & WEB AUDIO CONTEXT BACKUP -->
+    <script>
+        // Web Audio API click sound generator
+        let audioCtx = null;
+        let isSoundEnabled = true;
+
+        function playClickSound() {
+            if (!isSoundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.08);
+                
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch (e) {
+                console.log("Web Audio API not allowed yet.");
+            }
+        }
+
+        function playSuccessSound() {
+            if (!isSoundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc1.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+                osc2.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.1);
+                
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc1.start();
+                osc2.start();
+                osc1.stop(audioCtx.currentTime + 0.25);
+                osc2.stop(audioCtx.currentTime + 0.25);
+            } catch (e) {
+                console.log("Web Audio API fail.");
+            }
+        }
+    </script>
+
+    <!-- DATA DZIKIR -->
+    <script>
+        const dataDzikirPagi = [
+            {
+                id: "pagi-1",
+                title: "Membaca Ayat Kursi",
+                arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+                latin: "Allahu laa ilaaha illa huwal hayyul qayyuum, laa ta'khudzuhu sinatuw walaa naum, lahu maa fis-samaawaati wa maa fil-ardh, man dzalladzii yasyfa'u 'indahuu illa bi-idznih, ya'lamu maa baina aidiihim wa maa khalfahum, walaa yuhiithuuna bisyai-im min 'ilmihii illa bimaa syaa-a, wasi'a kursiyyuhus-samaawaati wal-ardha walaa ya-uuduhu hifzhuhumaa wahuwal 'aliyyul 'azhiim.",
+                translation: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafa'at di sisi Allah tanpa izin-Nya? Allah mengetahui apa-apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui apa-apa dari ilmu Allah melainkan apa yang dikehendaki-Nya. Kursi Allah meliputi langit dan bumi. Dan Allah tidak merasa berat memelihara keduanya, dan Allah Maha Tinggi lagi Maha Besar. (QS. Al-Baqarah: 255)",
+                benefit: "Siapa yang membacanya di pagi hari maka ia akan dilindungi dari gangguan jin hingga sore hari.",
+                target: 1,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/002255.mp3"
+            },
+            {
+                id: "pagi-2",
+                title: "Membaca Surah Al-Ikhlas",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ هُوَ اللَّهُ أَحَدٌ . اللَّهُ الصَّمَدُ . لَمْ يَلِدْ وَلَمْ يُولَدْ . وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
+                latin: "Bismillahirrahmaanirrahiim. Qul huwallahu ahad. Allahush-shamad. Lam yalid walam yuulad. Walam yakul lahuu kufuwan ahad.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Dialah Allah, Yang Maha Esa. Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorang pun yang setara dengan Dia.",
+                benefit: "Membaca Al-Ikhlas, Al-Falaq, & An-Naas masing-masing 3x di waktu pagi & sore akan melindunginya dari segala sesuatu.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/112001.mp3"
+            },
+            {
+                id: "pagi-3",
+                title: "Membaca Surah Al-Falaq",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ . مِن شَرِّ مَا خَلَقَ . وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ . وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ . وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+                latin: "Bismillahirrahmaanirrahiim. Qul a'uudzu birabbil falaq. Min syarri maa khalaq. Wa min syarri ghaasiqin idzaa waqab. Wa min syarrin-naffaathaati fil 'uqad. Wa min syarri haasidin idzaa hasad.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita penyihir yang meniup pada buhul-buhul, dan dari kejahatan pendengki apabila ia dengki.",
+                benefit: "Melindungi dari kejahatan fisik, sihir, dan kedengkian makhluk.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/113001.mp3"
+            },
+            {
+                id: "pagi-4",
+                title: "Membaca Surah An-Naas",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ . مَلِكِ النَّاسِ . إِلَٰهِ النَّاسِ . مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ . الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ . مِنَ الْجِنَّةِ وَالنَّاسِ",
+                latin: "Bismillahirrahmaanirrahiim. Qul a'uudzu birabbin-naas. Malikin-naas. Ilaahin-naas. Min syarril waswaasil khannaas. Alladzii yuwaswisu fii shuduurin-naas. Minal jinnati wan-naas.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) setan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.",
+                benefit: "Melindungi diri dari bisikan setan dan gangguan manusia serta jin.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/114001.mp3"
+            },
+            {
+                id: "pagi-5",
+                title: "Doa Kepasrahan Diri Pagi Hari",
+                arabic: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ",
+                latin: "Ashbahnaa wa ashbahal-mulku lillaahi walhamdu lillaah, laa ilaaha illallaahu wahdahu laa syariikalah, lahul-mulku walahul-hamdu wahuwa 'alaa kulli syai-in qadiir. Rabbi as-aluka khaira maa fii haadzal-yaumi wa khaira maa ba'dahu, wa a'uudzu bika min syarri maa fii haadzal-yaumi wa syarri maa ba'dahu. Rabbi a'uudzu bika minal-kasali wa suu-il kibar, Rabbi a'uudzu bika min 'adzaabin fin-naari wa 'adzaabin fil-qabr.",
+                translation: "Kami memasuki pagi hari dan kerajaan hanya milik Allah, segala puji hanya bagi Allah. Tidak ada Tuhan yang berhak disembah selain Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dialah Yang Maha Kuasa atas segala sesuatu. Wahai Rabb-ku, aku mohon kepada-Mu kebaikan di hari ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari kejahatan hari ini dan kejahatan sesudahnya. Wahai Rabb-ku, aku berlindung kepada-Mu dari kemalasan dan keburukan di hari tua. Wahai Rabb-ku, aku berlindung kepada-Mu dari siksaan di neraka dan siksaan di kubur.",
+                benefit: "Pengakuan ketauhidan dan permohonan kebaikan sepanjang hari serta perlindungan dari siksa kubur dan neraka.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-5.mp3"
+            },
+            {
+                id: "pagi-6",
+                title: "Doa Memasuki Waktu Pagi",
+                arabic: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ",
+                latin: "Allahumma bika ashbahnaa, wa bika amsaynaa, wa bika nahyaa, wa bika namuutu, wa ilaykan-nusyuur.",
+                translation: "Ya Allah, dengan rahmat dan pertolongan-Mu kami memasuki waktu pagi, dan dengan rahmat-Mu kami memasuki waktu sore. Dengan rahmat-Mu kami hidup, dengan takdir-Mu kami mati, dan kepada-Mu tempat kembali (bagi semua makhluk).",
+                benefit: "Kepasrahan total atas hidup, mati, dan hari kebangkitan di pagi hari.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-6.mp3"
+            },
+            {
+                id: "pagi-7",
+                title: "Sayyidul Istighfar (Rajanya Istighfar)",
+                arabic: "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+                latin: "Allahumma anta rabbii laa ilaaha illa anta, khalaqtanii wa ana 'abduka, wa ana 'alaa 'ahdika wa wa'dika mastatha'tu. A'uudzu bika min syarri maa shana'tu, abuu-u laka bini'matika 'alayya, wa abuu-u bidzanbii faghfirlii fa-innahu laa yaghfirudz-dzunuuba illa anta.",
+                translation: "Ya Allah, Engkau adalah Rabbku, tiada Tuhan yang berhak disembah selain Engkau. Engkaulah yang menciptakan aku dan aku adalah hamba-Mu. Aku menetapi perjanjian-Mu dan janji-Mu sesuai dengan kemampuanku. Aku berlindung kepada-Mu dari keburukan perbuatanku. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku kepada-Mu, maka ampunilah aku. Sebab tidak ada yang dapat mengampuni dosa selain Engkau.",
+                benefit: "Siapa yang membacanya dengan keyakinan di pagi hari lalu meninggal sebelum sore, maka ia termasuk penduduk surga.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-7.mp3"
+            },
+            {
+                id: "pagi-8",
+                title: "Doa Afiyah (Kesehatan & Kesejahteraan)",
+                arabic: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَٰهَ إِلَّا أَنْتَ",
+                latin: "Allahumma 'aafinii fii badanii, Allahumma 'aafinii fii sam'ii, Allahumma 'aafinii fii basharii, laa ilaaha illa anta. Allahumma inni a'uudzu bika minal-kufri wal-faqri, wa a'uudzu bika min 'adzaabil-qabri, laa ilaaha illa anta.",
+                translation: "Ya Allah, selamatkanlah badanku (dari penyakit dan hal yang tidak kuinginkan). Ya Allah, selamatkanlah pendengaranku. Ya Allah, selamatkanlah penglihatanku, tiada Tuhan yang berhak disembah selain Engkau. Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kekafiran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tiada Tuhan yang berhak disembah selain Engkau.",
+                benefit: "Menjaga kesehatan jasmani, pendengaran, penglihatan, serta perlindungan dari kemiskinan dan kekufuran.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-8.mp3"
+            },
+            {
+                id: "pagi-9",
+                title: "Doa Perlindungan Arah (Dunia & Akhirat)",
+                arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي",
+                latin: "Allahumma inni as-alukal-'afwa wal-'aafiyah fid-dunyaa wal-aakhirah. Allahumma inni as-alukal-'afwa wal-'aafiyah fii diinii wa dunyaaya wa ahlii wa maalii. Allahummastur 'auraatii wa aamin rau'aatii. Allahummahfazhnii min bayni yadayya, wa min khalfii, wa 'an yamiinii, wa 'an syimaalii, wa min fauqii, wa a'uudzu bi'azhamatika an ughtaala min tahtii.",
+                translation: "Ya Allah, sesungguhnya aku memohon ampunan dan keselamatan di dunia dan akhirat. Ya Allah, aku memohon ampunan dan keselamatan dalam agamaku, duniaku, keluargaku, dan hartaku. Ya Allah, tutupilah auratku (aib dan kejelekanku) dan tenangkanlah aku dari rasa takut. Ya Allah, peliharalah aku dari arah depan, belakang, kanan, kiri, dan dari atasku. Aku berlindung dengan keagungan-Mu agar aku tidak disergap (dibenamkan ke dalam bumi) dari arah bawahku.",
+                benefit: "Perlindungan komprehensif dari marabahaya tak terduga dari segala arah mata angin.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-9.mp3"
+            },
+            {
+                id: "pagi-10",
+                title: "Doa Perlindungan dari Setan dan Nafsu",
+                arabic: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ",
+                latin: "Allahumma 'aalimal-ghaibi wasy-syahaadati faathiras-samaawaati wal-ardhi, rabba kulli syai-in wa maliikahu. Asyhadu alla ilaaha illa anta, a'uudzu bika min syarri nafsii, wa min syarrisy-syai-thaani wa syirkihi, wa an aqtarifa 'alaa nafsii suu-an aw ajurra-hu ilaa muslim.",
+                translation: "Ya Allah, Yang Maha Mengetahui yang gaib dan yang nyata, Pencipta langit dan bumi, Rabb dan Pemilik segala sesuatu. Aku bersaksi bahwa tiada Tuhan yang berhak disembah selain Engkau. Aku berlindung kepada-Mu dari kejahatan diriku sendiri, dari kejahatan setan dan sekutu-sekutunya (atau bujukannya untuk mempersekutukan Allah), serta dari berbuat keburukan terhadap diriku sendiri atau menyeretnya kepada seorang muslim.",
+                benefit: "Perlindungan dari hawa nafsu diri sendiri serta hasutan setan untuk berbuat dosa/syirik.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-10.mp3"
+            },
+            {
+                id: "pagi-11",
+                title: "Dzikir Perlindungan Bahaya (Bismillah...)",
+                arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+                latin: "Bismillahilladzii laa yadhurru ma'asmihi syai-un fil-ardhi walaa fis-samaa-i wahuwas-samii'ul-'aliim.",
+                translation: "Dengan nama Allah yang bila disebut, segala sesuatu di bumi dan langit tidak akan berbahaya. Dialah Yang Maha Mendengar lagi Maha Mengetahui.",
+                benefit: "Membacanya 3x di pagi & sore membuat pembaca terhindar dari marabahaya/racun/sihir yang dapat membahayakan dirinya sepanjang hari.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-11.mp3"
+            },
+            {
+                id: "pagi-12",
+                title: "Dzikir Keridhaan (Meraih Ridha Allah)",
+                arabic: "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا",
+                latin: "Radhiitu billaahi rabba(n), wa bil-islaami diina(n), wa bi muhammadin shallallaahu 'alayhi wa sallama nabiyya(n).",
+                translation: "Aku ridha Allah sebagai Rabbku, Islam sebagai agamaku, dan Muhammad (shallallahu 'alaihi wa sallam) sebagai nabiku.",
+                benefit: "Barangsiapa membacanya 3x di pagi & sore hari, maka Allah berjanji akan meridhai orang tersebut di hari Kiamat kelak.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-12.mp3"
+            },
+            {
+                id: "pagi-13",
+                title: "Doa Memohon Kecukupan (Hasbiyallahu...)",
+                arabic: "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+                latin: "Hasbiyallaahu laa ilaaha illa huwa 'alayhi tawakkaltu wa huwa rabbul-'arsyil-'azhiim.",
+                translation: "Cukuplah Allah bagiku; tidak ada Tuhan selain Dia. Hanya kepada-Nya aku bertawakal dan Dia adalah Rabb Pemilik Arsy yang agung.",
+                benefit: "Siapa yang membacanya 7x di pagi & sore hari, Allah akan mencukupi semua urusan dunia & akhirat yang menyusahkannya.",
+                target: 7,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-13.mp3"
+            },
+            {
+                id: "pagi-14",
+                title: "Doa Keteguhan Iman (Fitrah Islam)",
+                arabic: "أَصْبَحْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ، وَعَلَىٰ دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَعَلَىٰ مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ",
+                latin: "Ashbahnaa 'alaa fitratil-islaam, wa 'alaa kalimatil-ikhlaash, wa 'alaa diini nabiyyinaa muhammadin shallallaahu 'alayhi wa sallam, wa 'alaa millati abiinaa ibraahiima haniifam-muslimaw-wamaa kaana minal-musyrikiin.",
+                translation: "Kami memasuki pagi hari di atas fitrah Islam, kalimat ikhlas (tauhid), agama nabi kami Muhammad shallallahu 'alaihi wa sallam, dan di atas millah (ajaran) bapak kami Ibrahim yang hanif (lurus) lagi berserah diri kepada Allah dan dia bukanlah termasuk golongan orang-orang musyrik.",
+                benefit: "Ikrar pagi hari untuk tetap teguh memegang keyakinan tauhid dan sunnah Rasulullah.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-14.mp3"
+            },
+            {
+                id: "pagi-15",
+                title: "Dzikir Pujian & Keagungan Ciptaan Allah",
+                arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ",
+                latin: "Subhaanallaahi wa bihamdih: 'adada khalqih, wa ridhaa nafsih, wa zinata 'arsyih, wa midaada kalimaatih.",
+                translation: "Maha Suci Allah dan segala puji bagi-Nya, sebanyak bilangan makhluk-Nya, serida diri-Nya, seberat timbangan Arsy-Nya, dan sepanjang tinta kalimat-kalimat-Nya.",
+                benefit: "Nilai pahalanya mengimbangi dzikir-dzikir lain yang dibaca dari pagi hingga siang hari.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-15.mp3"
+            },
+            {
+                id: "pagi-16",
+                title: "Doa Memohon Ilmu, Rezeki & Amal",
+                arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا",
+                latin: "Allahumma inni as-aluka 'ilman naafi'an, wa rizqan thayyiban, wa 'amalan mutaqabbalan.",
+                translation: "Ya Allah, sesungguhnya aku memohon kepada-Mu ilmu yang bermanfaat, rezeki yang baik (halal), dan amal yang diterima.",
+                benefit: "Doa harian yang sangat dianjurkan dibaca setiap selesai shalat Subuh agar berkah dalam ilmu dan nafkah.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-16.mp3"
+            },
+            {
+                id: "pagi-17",
+                title: "Dzikir Penghapus Dosa (100x)",
+                arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+                latin: "Subhaanallaahi wa bihamdih.",
+                translation: "Maha Suci Allah dan segala puji bagi-Nya.",
+                benefit: "Membacanya 100x sehari menghapus dosa-dosa kecil pembacanya walau sebanyak buih di lautan, dan tak ada yang menandinginya di hari kiamat kecuali yang membaca serupa atau lebih.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-17.mp3"
+            },
+            {
+                id: "pagi-18",
+                title: "Dzikir Pelindung Setan & Pembuka Kebaikan",
+                arabic: "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+                latin: "Laa ilaaha illallaahu wahdahu laa syariikalah, lahul-mulku walahul-hamdu wahuwa 'alaa kulli syai-in qadiir.",
+                translation: "Tidak ada Tuhan yang berhak disembah selain Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dialah Yang Maha Kuasa atas segala sesuatu.",
+                benefit: "Dibaca 100x: Mendapat pahala memerdekakan 10 budak, ditulis 100 kebaikan, dihapus 100 keburukan, dan menjadi benteng dari setan seharian itu.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-18.mp3"
+            },
+            {
+                id: "pagi-19",
+                title: "Istighfar dan Bertaubat (100x)",
+                arabic: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ",
+                latin: "Astaghfirullaaha wa atuubu ilaih.",
+                translation: "Aku memohon ampunan kepada Allah dan bertobat kepada-Nya.",
+                benefit: "Rasulullah shallallahu 'alaihi wa sallam senantiasa beristighfar dan bertaubat sekurangnya 100 kali dalam sehari.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-19.mp3"
+            },
+            {
+                id: "pagi-20",
+                title: "Shalawat Kepada Nabi Muhammad",
+                arabic: "اللَّهُمَّ صَلِّ وَسَلِّـمْ عَلَىٰ نَبِيِّنَا مُحَمَّدٍ",
+                latin: "Allahumma shalli wa sallim 'alaa nabiyyinaa muhammad.",
+                translation: "Ya Allah, limpahkanlah shalawat dan salam kepada nabi kami Muhammad.",
+                benefit: "Barangsiapa membaca shalawat kepadaku 10x di pagi hari dan 10x di sore hari, maka ia akan mendapatkan syafaatku pada hari kiamat.",
+                target: 10,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/pagi-20.mp3"
+            }
+        ];
+
+        const dataDzikirPetang = [
+            {
+                id: "petang-1",
+                title: "Membaca Ayat Kursi",
+                arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+                latin: "Allahu laa ilaaha illa huwal hayyul qayyuum, laa ta'khudzuhu sinatuw walaa naum, lahu maa fis-samaawaati wa maa fil-ardh, man dzalladzii yasyfa'u 'indahuu illa bi-idznih, ya'lamu maa baina aidiihim wa maa khalfahum, walaa yuhiithuuna bisyai-im min 'ilmihii illa bimaa syaa-a, wasi'a kursiyyuhus-samaawaati wal-ardha walaa ya-uuduhu hifzhuhumaa wahuwal 'aliyyul 'azhiim.",
+                translation: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafa'at di sisi Allah tanpa izin-Nya? Allah mengetahui apa-apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui apa-apa dari ilmu Allah melainkan apa yang dikehendaki-Nya. Kursi Allah meliputi langit dan bumi. Dan Allah tidak merasa berat memelihara keduanya, dan Allah Maha Tinggi lagi Maha Besar. (QS. Al-Baqarah: 255)",
+                benefit: "Siapa yang membacanya di sore hari maka ia akan dilindungi dari gangguan jin hingga pagi hari.",
+                target: 1,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/002255.mp3"
+            },
+            {
+                id: "petang-2",
+                title: "Membaca Surah Al-Ikhlas",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ هُوَ اللَّهُ أَحَدٌ . اللَّهُ الصَّمَدُ . لَمْ يَلِدْ وَلَمْ يُولَدْ . وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
+                latin: "Bismillahirrahmaanirrahiim. Qul huwallahu ahad. Allahush-shamad. Lam yalid walam yuulad. Walam yakul lahuu kufuwan ahad.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Dialah Allah, Yang Maha Esa. Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorang pun yang setara dengan Dia.",
+                benefit: "Membaca Al-Ikhlas, Al-Falaq, & An-Naas masing-masing 3x di waktu pagi & sore akan melindunginya dari segala sesuatu.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/112001.mp3"
+            },
+            {
+                id: "petang-3",
+                title: "Membaca Surah Al-Falaq",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ . مِن شَرِّ مَا خَلَقَ . وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ . وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ . وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+                latin: "Bismillahirrahmaanirrahiim. Qul a'uudzu birabbil falaq. Min syarri maa khalaq. Wa min syarri ghaasiqin idzaa waqab. Wa min syarrin-naffaathaati fil 'uqad. Wa min syarri haasidin idzaa hasad.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita penyihir yang meniup pada buhul-buhul, dan dari kejahatan pendengki apabila ia dengki.",
+                benefit: "Melindungi dari kejahatan fisik, sihir, dan kedengkian makhluk.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/113001.mp3"
+            },
+            {
+                id: "petang-4",
+                title: "Membaca Surah An-Naas",
+                arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ . مَلِكِ النَّاسِ . إِلَٰهِ النَّاسِ . مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ . الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ . مِنَ الْجِنَّةِ وَالنَّاسِ",
+                latin: "Bismillahirrahmaanirrahiim. Qul a'uudzu birabbin-naas. Malikin-naas. Ilaahin-naas. Min syarril waswaasil khannaas. Alladzii yuwaswisu fii shuduurin-naas. Minal jinnati wan-naas.",
+                translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) setan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.",
+                benefit: "Melindungi diri dari bisikan setan dan gangguan manusia serta jin.",
+                target: 3,
+                audio: "https://everyayah.com/data/Alafasy_128kbps/114001.mp3"
+            },
+            {
+                id: "petang-5",
+                title: "Doa Kepasrahan Diri Sore Hari",
+                arabic: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ",
+                latin: "Amsaynaa wa amsal-mulku lillaahi walhamdu lillaah, laa ilaaha illallaahu wahdahu laa syariikalah, lahul-mulku walahul-hamdu wahuwa 'alaa kulli syai-in qadiir. Rabbi as-aluka khaira maa fii haadzihil-lailati wa khaira maa ba'dahaa, wa a'uudzu bika min syarri maa fii haadzihil-lailati wa syarri maa ba'dahaa. Rabbi a'uudzu bika minal-kasali wa suu-il kibar, Rabbi a'uudzu bika min 'adzaabin fin-naari wa 'adzaabin fil-qabr.",
+                translation: "Kami memasuki sore hari dan kerajaan hanya milik Allah, segala puji hanya bagi Allah. Tidak ada Tuhan yang berhak disembah selain Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dialah Yang Maha Kuasa atas segala sesuatu. Wahai Rabb-ku, aku mohon kepada-Mu kebaikan di malam ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari kejahatan malam ini dan kejahatan sesudahnya. Wahai Rabb-ku, aku berlindung kepada-Mu dari kemalasan dan keburukan di hari tua. Wahai Rabb-ku, aku berlindung kepada-Mu dari siksaan di neraka dan siksaan di kubur.",
+                benefit: "Ikrar ketauhidan sore hari dan memohon perlindungan sepanjang malam dari keburukan dan kemalasan.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-5.mp3"
+            },
+            {
+                id: "petang-6",
+                title: "Doa Memasuki Waktu Sore",
+                arabic: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ",
+                latin: "Allahumma bika amsaynaa, wa bika ashbahnaa, wa bika nahyaa, wa bika namuutu, wa ilaykal-mashiir.",
+                translation: "Ya Allah, dengan rahmat dan pertolongan-Mu kami memasuki waktu sore, dan dengan rahmat-Mu kami memasuki waktu pagi. Dengan rahmat-Mu kami hidup, dengan takdir-Mu kami mati, dan kepada-Mu tempat kembali.",
+                benefit: "Pernyataan syukur dan kepasrahan atas hidup dan mati di sore hari.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-6.mp3"
+            },
+            {
+                id: "petang-7",
+                title: "Sayyidul Istighfar (Rajanya Istighfar)",
+                arabic: "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+                latin: "Allahumma anta rabbii laa ilaaha illa anta, khalaqtanii wa ana 'abduka, wa ana 'alaa 'ahdika wa wa'dika mistatha'tu. A'uudzu bika min syarri maa shana'tu, abuu-u laka bini'matika 'alayya, wa abuu-u bidzanbii faghfirlii fa-innahu laa yaghfirudz-dzunuuba illa anta.",
+                translation: "Ya Allah, Engkau adalah Rabbku, tiada Tuhan yang berhak disembah selain Engkau. Engkaulah yang menciptakan aku dan aku adalah hamba-Mu. Aku menetapi perjanjian-Mu dan janji-Mu sesuai dengan kemampuanku. Aku berlindung kepada-Mu dari keburukan perbuatanku. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku kepada-Mu, maka ampunilah aku. Sebab tidak ada yang dapat mengampuni dosa selain Engkau.",
+                benefit: "Siapa yang membacanya dengan keyakinan di sore hari lalu meninggal sebelum pagi, maka ia termasuk penduduk surga.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-7.mp3"
+            },
+            {
+                id: "petang-8",
+                title: "Doa Afiyah (Kesehatan & Kesejahteraan)",
+                arabic: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَٰهَ إِلَّا أَنْتَ",
+                latin: "Allahumma 'aafinii fii badanii, Allahumma 'aafinii fii sam'ii, Allahumma 'aafinii fii basharii, laa ilaaha illa anta. Allahumma inni a'uudzu bika minal-kufri wal-faqri, wa a'uudzu bika min 'adzaabil-qabri, laa ilaaha illa anta.",
+                translation: "Ya Allah, selamatkanlah badanku (dari penyakit dan hal yang tidak kuinginkan). Ya Allah, selamatkanlah pendengaranku. Ya Allah, selamatkanlah penglihatanku, tiada Tuhan yang berhak disembah selain Engkau. Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kekafiran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tiada Tuhan yang berhak disembah selain Engkau.",
+                benefit: "Menjaga kesehatan jasmani, pendengaran, penglihatan, serta perlindungan dari kemiskinan dan kekufuran.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-8.mp3"
+            },
+            {
+                id: "petang-9",
+                title: "Doa Perlindungan Arah (Dunia & Akhirat)",
+                arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي",
+                latin: "Allahumma inni as-alukal-'afwa wal-'aafiyah fid-dunyaa wal-aakhirah. Allahumma inni as-alukal-'afwa wal-'aafiyah fii diinii wa dunyaaya wa ahlii wa maalii. Allahummastur 'auraatii wa aamin rau'aatii. Allahummahfazhnii min bayni yadayya, wa min khalfii, wa 'an yamiinii, wa 'an syimaalii, wa min fauqii, wa a'uudzu bi'azhamatika an ughtaala min tahtii.",
+                translation: "Ya Allah, sesungguhnya aku memohon ampunan dan keselamatan di dunia dan akhirat. Ya Allah, aku memohon ampunan dan keselamatan dalam agamaku, duniaku, keluargaku, dan hartaku. Ya Allah, tutupilah auratku (aib dan kejelekanku) dan tenangkanlah aku dari rasa takut. Ya Allah, peliharalah aku dari arah depan, belakang, kanan, kiri, dan dari atasku. Aku berlindung dengan keagungan-Mu agar aku tidak disergap (dibenamkan ke dalam bumi) dari arah bawahku.",
+                benefit: "Perlindungan komprehensif dari marabahaya tak terduga dari segala arah mata angin.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-9.mp3"
+            },
+            {
+                id: "petang-10",
+                title: "Doa Perlindungan dari Setan dan Nafsu",
+                arabic: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ",
+                latin: "Allahumma 'aalimal-ghaibi wasy-syahaadati faathiras-samaawaati wal-ardhi, rabba kulli syai-in wa maliikahu. Asyhadu alla ilaaha illa anta, a'uudzu bika min syarri nafsii, wa min syarrisy-syai-thaani wa syirkihi, wa an aqtarifa 'alaa nafsii suu-an aw ajurra-hu ilaa muslim.",
+                translation: "Ya Allah, Yang Maha Mengetahui yang gaib dan yang nyata, Pencipta langit dan bumi, Rabb dan Pemilik segala sesuatu. Aku bersaksi bahwa tiada Tuhan yang berhak disembah selain Engkau. Aku berlindung kepada-Mu dari kejahatan diriku sendiri, dari kejahatan setan dan sekutu-sekutunya (atau bujukannya untuk mempersekutukan Allah), serta dari berbuat keburukan terhadap diriku sendiri atau menyeretnya kepada seorang muslim.",
+                benefit: "Perlindungan dari hawa nafsu diri sendiri serta hasutan setan untuk berbuat dosa/syirik.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-10.mp3"
+            },
+            {
+                id: "petang-11",
+                title: "Dzikir Perlindungan Bahaya (Bismillah...)",
+                arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+                latin: "Bismillahilladzii laa yadhurru ma'asmihi syai-un fil-ardhi walaa fis-samaa-i wahuwas-samii'ul-'aliim.",
+                translation: "Dengan nama Allah yang bila disebut, segala sesuatu di bumi dan langit tidak akan berbahaya. Dialah Yang Maha Mendengar lagi Maha Mengetahui.",
+                benefit: "Membacanya 3x di pagi & sore membuat pembaca terhindar dari marabahaya/racun/sihir yang dapat membahayakan dirinya sepanjang hari.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-11.mp3"
+            },
+            {
+                id: "petang-12",
+                title: "Dzikir Keridhaan (Meraih Ridha Allah)",
+                arabic: "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا",
+                latin: "Radhiitu billaahi rabba(n), wa bil-islaami diina(n), wa bi muhammadin shallallaahu 'alayhi wa sallama nabiyya(n).",
+                translation: "Aku ridha Allah sebagai Rabbku, Islam sebagai agamaku, dan Muhammad (shallallahu 'alaihi wa sallam) sebagai nabiku.",
+                benefit: "Barangsiapa membacanya 3x di pagi & sore hari, maka Allah berjanji akan meridhai orang tersebut di hari Kiamat kelak.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-12.mp3"
+            },
+            {
+                id: "petang-13",
+                title: "Doa Memohon Kecukupan (Hasbiyallahu...)",
+                arabic: "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+                latin: "Hasbiyallaahu laa ilaaha illa huwa 'alayhi tawakkaltu wa huwa rabbul-'arsyil-'azhiim.",
+                translation: "Cukuplah Allah bagiku; tidak ada Tuhan selain Dia. Hanya kepada-Nya aku bertawakal dan Dia adalah Rabb Pemilik Arsy yang agung.",
+                benefit: "Siapa yang membacanya 7x di pagi & sore hari, Allah akan mencukupi semua urusan dunia & akhirat yang menyusahkannya.",
+                target: 7,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-13.mp3"
+            },
+            {
+                id: "petang-14",
+                title: "Doa Keteguhan Iman (Fitrah Islam)",
+                arabic: "أَمْسَيْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ، وَعَلَىٰ دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَعَلَىٰ مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ",
+                latin: "Amsaynaa 'alaa fitratil-islaam, wa 'alaa kalimatil-ikhlaash, wa 'alaa diini nabiyyinaa muhammadin shallallaahu 'alayhi wa sallam, wa 'alaa millati abiinaa ibraahiima haniifam-muslimaw-wamaa kaana minal-musyrikiin.",
+                translation: "Kami memasuki sore hari di atas fitrah Islam, kalimat ikhlas (tauhid), agama nabi kami Muhammad shallallahu 'alaihi wa sallam, dan di atas millah (ajaran) bapak kami Ibrahim yang hanif (lurus) lagi berserah diri kepada Allah dan dia bukanlah termasuk golongan orang-orang musyrik.",
+                benefit: "Ikrar sore hari untuk tetap teguh memegang keyakinan tauhid dan sunnah Rasulullah.",
+                target: 1,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-14.mp3"
+            },
+            {
+                id: "petang-15",
+                title: "Doa Perlindungan dari Kejahatan Ciptaan-Nya",
+                arabic: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+                latin: "A'uudzu bikalimaatillaahit-taammaati min syarri maa khalaq.",
+                translation: "Aku berlindung dengan kalimat-kalimat Allah yang sempurna, dari kejahatan apa saja yang diciptakan-Nya.",
+                benefit: "Membacanya 3x di sore hari menghindarkan pembacanya dari gigitan binatang berbisa (seperti kalajengking) dan kejahatan makhluk di malam hari.",
+                target: 3,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-15.mp3"
+            },
+            {
+                id: "petang-16",
+                title: "Dzikir Penghapus Dosa (100x)",
+                arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+                latin: "Subhaanallaahi wa bihamdih.",
+                translation: "Maha Suci Allah dan segala puji bagi-Nya.",
+                benefit: "Membacanya 100x sehari menghapus dosa-dosa kecil pembacanya walau sebanyak buih di lautan, dan tak ada yang menandinginya di hari kiamat kecuali yang membaca serupa atau lebih.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-16.mp3"
+            },
+            {
+                id: "petang-17",
+                title: "Dzikir Pelindung Setan & Pembuka Kebaikan",
+                arabic: "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+                latin: "Laa ilaaha illallaahu wahdahu laa syariikalah, lahul-mulku walahul-hamdu wahuwa 'alaa kulli syai-in qadiir.",
+                translation: "Tidak ada Tuhan yang berhak disembah selain Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dialah Yang Maha Kuasa atas segala sesuatu.",
+                benefit: "Dibaca 100x: Mendapat pahala memerdekakan 10 budak, ditulis 100 kebaikan, dihapus 100 keburukan, dan menjadi benteng dari setan seharian itu.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-17.mp3"
+            },
+            {
+                id: "petang-18",
+                title: "Istighfar dan Bertaubat (100x)",
+                arabic: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ",
+                latin: "Astaghfirullaaha wa atuubu ilaih.",
+                translation: "Aku memohon ampunan kepada Allah dan bertobat kepada-Nya.",
+                benefit: "Rasulullah shallallahu 'alaihi wa sallam senantiasa beristighfar dan bertaubat sekurangnya 100 kali dalam sehari.",
+                target: 100,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-18.mp3"
+            },
+            {
+                id: "petang-19",
+                title: "Shalawat Kepada Nabi Muhammad",
+                arabic: "اللَّهُمَّ صَلِّ وَسَلِّـمْ عَلَىٰ نَبِيِّنَا مُحَمَّدٍ",
+                latin: "Allahumma shalli wa sallim 'alaa nabiyyinaa muhammad.",
+                translation: "Ya Allah, limpahkanlah shalawat dan salam kepada nabi kami Muhammad.",
+                benefit: "Barangsiapa membaca shalawat kepadaku 10x di pagi hari dan 10x di sore hari, maka ia akan mendapatkan syafaatku pada hari kiamat.",
+                target: 10,
+                audio: "https://archive.org/download/dzikir-pagi-petang-alafasy/petang-19.mp3"
+            }
+        ];
+    </script>
+
+    <!-- LOGIKA APLIKASI -->
+    <script>
+        // APP STATE
+        let activeTab = 'pagi';
+        let counts = {};
+        let settings = {
+            darkMode: false,
+            fontSize: 28,
+            showLatin: true,
+            showTranslation: true,
+            showBenefit: true,
+            autoScroll: true
+        };
+        let currentPlayingId = null;
+
+        // DOM ELEMENTS
+        const dhikrListEl = document.getElementById('dhikr-list');
+        const tabPagiBtn = document.getElementById('tab-pagi');
+        const tabPetangBtn = document.getElementById('tab-petang');
+        
+        const btnReset = document.getElementById('btn-reset');
+        const btnSound = document.getElementById('btn-sound');
+        const btnSettings = document.getElementById('btn-settings');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        
+        const settingsDrawer = document.getElementById('settings-drawer');
+        const settingsContent = document.getElementById('settings-content');
+        
+        const btnThemeToggle = document.getElementById('btn-theme-toggle');
+        const themeIconText = document.getElementById('theme-icon-text');
+        
+        const inputFontSize = document.getElementById('input-font-size');
+        const fontSizeLabel = document.getElementById('font-size-label');
+        
+        const toggleLatin = document.getElementById('toggle-latin');
+        const toggleTranslation = document.getElementById('toggle-translation');
+        const toggleBenefit = document.getElementById('toggle-benefit');
+        const toggleAutoScroll = document.getElementById('toggle-autoscroll');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressPercent = document.getElementById('progress-percent');
+        
+        const appTitle = document.getElementById('app-title');
+        const timeIcon = document.getElementById('time-icon');
+        
+        const soundIconOn = document.getElementById('sound-icon-on');
+        const soundIconOff = document.getElementById('sound-icon-off');
+        
+        const globalAudioPlayer = document.getElementById('global-audio-player');
+
+        // INIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            detectTimeCategory();
+            loadProgress();
+            renderDhikrList();
+            updateProgressBar();
+            setupEventListeners();
+            setupAudioEngine();
+        });
+
+        // Detect current time to set default tab
+        function detectTimeCategory() {
+            const hour = new Date().getHours();
+            if (hour >= 4 && hour < 12) {
+                switchTab('pagi');
+            } else {
+                switchTab('petang');
+            }
+        }
+
+        // Switch active tab
+        function switchTab(tab) {
+            // Stop audio when switching tabs
+            stopAudio();
+            
+            activeTab = tab;
+            if (tab === 'pagi') {
+                tabPagiBtn.className = "flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-300 shadow-sm";
+                tabPetangBtn.className = "flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                appTitle.innerText = "Dzikir Pagi";
+                timeIcon.innerText = "☀️";
+            } else {
+                tabPetangBtn.className = "flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-300 shadow-sm";
+                tabPagiBtn.className = "flex-1 flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                appTitle.innerText = "Dzikir Petang";
+                timeIcon.innerText = "🌙";
+            }
+            renderDhikrList();
+            updateProgressBar();
+        }
+
+        // Get active dataset
+        function getActiveData() {
+            return activeTab === 'pagi' ? dataDzikirPagi : dataDzikirPetang;
+        }
+
+        // Render cards
+        function renderDhikrList() {
+            dhikrListEl.innerHTML = '';
+            const data = getActiveData();
+
+            data.forEach((dzikir, index) => {
+                const currentVal = counts[dzikir.id] || 0;
+                const isCompleted = currentVal >= dzikir.target;
+                const isAudioPlaying = currentPlayingId === dzikir.id && !globalAudioPlayer.paused;
+                
+                const card = document.createElement('div');
+                card.id = `card-${dzikir.id}`;
+                card.className = `bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800/80 p-5 md:p-6 transition-all duration-300 relative overflow-hidden flex flex-col ${
+                    isCompleted ? 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/20 dark:bg-emerald-950/10' : ''
+                } ${isAudioPlaying ? 'active-audio-ring' : ''}`;
+                
+                // Content construction
+                let html = `
+                    <!-- Header Kartu -->
+                    <div class="flex items-start justify-between mb-4 border-b border-slate-100 dark:border-slate-700/50 pb-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-bold w-6 h-6">${index + 1}</span>
+                            <h2 class="font-semibold text-slate-900 dark:text-white text-sm md:text-base">${dzikir.title}</h2>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Play Audio Button -->
+                            <button onclick="handleAudioPlay('${dzikir.id}', '${dzikir.audio}')" class="p-1.5 rounded-full text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Putar Suara">
+                                <span id="audio-btn-icon-${dzikir.id}">
+                                    ${isAudioPlaying 
+                                        ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>' 
+                                        : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                                    }
+                                </span>
+                            </button>
+                            <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">${dzikir.target}x Baca</span>
+                        </div>
+                    </div>
+
+                    <!-- Teks Arab -->
+                    <div class="arabic-text text-slate-950 dark:text-slate-100 leading-relaxed mb-4 select-all text-right pt-2" style="font-size: ${settings.fontSize}px;">
+                        ${dzikir.arabic.replace(/\n/g, '<br>')}
+                    </div>
+
+                    <!-- Teks Latin -->
+                    <p class="latin-text text-sm italic text-emerald-700 dark:text-emerald-300 leading-relaxed mb-3 ${settings.showLatin ? '' : 'hidden'}">
+                        ${dzikir.latin}
+                    </p>
+
+                    <!-- Terjemahan -->
+                    <div class="translation-text text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4 pl-3 border-l-2 border-slate-200 dark:border-slate-700 ${settings.showTranslation ? '' : 'hidden'}">
+                        <span class="font-medium text-xs text-slate-400 block mb-0.5">Artinya:</span>
+                        ${dzikir.translation}
+                    </div>
+
+                    <!-- Faedah/Hadits -->
+                    <div class="benefit-box bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3.5 border border-slate-100 dark:border-slate-700/30 text-xs text-slate-500 dark:text-slate-400 flex items-start space-x-2 mb-4 ${settings.showBenefit ? '' : 'hidden'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <div>
+                            <span class="font-bold text-slate-700 dark:text-slate-300">Faedah:</span> ${dzikir.benefit}
+                        </div>
+                    </div>
+
+                    <!-- Bagian Counter -->
+                    <div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700/50 pt-4">
+                        <div class="text-xs text-slate-400 dark:text-slate-500">
+                            Terbaca: <span class="font-bold text-slate-700 dark:text-slate-200 text-sm" id="count-val-${dzikir.id}">${currentVal}</span> / ${dzikir.target}
+                        </div>
+                        
+                        <button onclick="handleTap('${dzikir.id}', ${dzikir.target})" id="btn-count-${dzikir.id}" class="px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 select-none shadow-sm transition-all duration-200 ${
+                            isCompleted 
+                            ? 'bg-emerald-500 text-white shadow-emerald-500/10' 
+                            : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-slate-700 dark:text-emerald-300 dark:hover:bg-slate-600'
+                        }">
+                            <span id="btn-icon-${dzikir.id}">
+                                ${isCompleted 
+                                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>' 
+                                    : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>'
+                                }
+                            </span>
+                            <span id="btn-text-${dzikir.id}">${isCompleted ? 'Selesai' : 'Ketuk'}</span>
+                        </button>
+                    </div>
+                `;
+                
+                card.className = `bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800/80 p-5 md:p-6 transition-all duration-300 relative overflow-hidden flex flex-col ${
+                    isCompleted ? 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/20 dark:bg-emerald-950/10' : ''
+                } ${isAudioPlaying ? 'active-audio-ring' : ''}`;
+                card.innerHTML = html;
+                dhikrListEl.appendChild(card);
+            });
+        }
+
+        // Tap Counter Handler
+        function handleTap(id, target) {
+            if (!counts[id]) counts[id] = 0;
+            
+            if (counts[id] >= target) {
+                counts[id] = 0;
+                playClickSound();
+            } else {
+                counts[id]++;
+                if (navigator.vibrate) {
+                    navigator.vibrate(30);
+                }
+                
+                if (counts[id] >= target) {
+                    playSuccessSound();
+                    if (navigator.vibrate) {
+                        navigator.vibrate([60, 40, 60]);
+                    }
+                } else {
+                    playClickSound();
+                }
+            }
+            
+            saveProgress();
+            
+            const cardEl = document.getElementById(`card-${id}`);
+            const countValEl = document.getElementById(`count-val-${id}`);
+            const btnEl = document.getElementById(`btn-count-${id}`);
+            const btnIconEl = document.getElementById(`btn-icon-${id}`);
+            const btnTextEl = document.getElementById(`btn-text-${id}`);
+            
+            const isCompleted = counts[id] >= target;
+            countValEl.innerText = counts[id];
+            
+            if (isCompleted) {
+                cardEl.classList.add('border-emerald-200', 'dark:border-emerald-900/60', 'bg-emerald-50/20', 'dark:bg-emerald-950/10');
+                btnEl.className = "px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 select-none shadow-sm transition-all duration-200 bg-emerald-500 text-white shadow-emerald-500/10";
+                btnIconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>';
+                btnTextEl.innerText = 'Selesai';
+                
+                if (settings.autoScroll) {
+                    setTimeout(() => {
+                        const data = getActiveData();
+                        const nextIncomplete = data.find(item => (counts[item.id] || 0) < item.target);
+                        if (nextIncomplete) {
+                            const nextCard = document.getElementById(`card-${nextIncomplete.id}`);
+                            if (nextCard) {
+                                const offset = 100;
+                                const bodyRect = document.body.getBoundingClientRect().top;
+                                const elementRect = nextCard.getBoundingClientRect().top;
+                                const elementPosition = elementRect - bodyRect;
+                                const offsetPosition = elementPosition - offset;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 400);
+                }
+            } else {
+                cardEl.classList.remove('border-emerald-200', 'dark:border-emerald-900/60', 'bg-emerald-50/20', 'dark:bg-emerald-950/10');
+                btnEl.className = "px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 select-none shadow-sm transition-all duration-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-slate-700 dark:text-emerald-300 dark:hover:bg-slate-600";
+                btnIconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>';
+                btnTextEl.innerText = 'Ketuk';
+            }
+            
+            updateProgressBar();
+        }
+
+        // AUDIO PLAYER ENGINE
+        function setupAudioEngine() {
+            // Audio Event Listeners to sync UI
+            globalAudioPlayer.addEventListener('play', () => {
+                updateAudioUI(currentPlayingId, true);
+            });
+            globalAudioPlayer.addEventListener('pause', () => {
+                updateAudioUI(currentPlayingId, false);
+            });
+            globalAudioPlayer.addEventListener('ended', () => {
+                updateAudioUI(currentPlayingId, false);
+                currentPlayingId = null;
+            });
+            globalAudioPlayer.addEventListener('error', () => {
+                console.log(`Audio error on current file. Triggering fallback streaming.`);
+                // If local file failed, try online fallback
+                const data = getActiveData();
+                const currentItem = data.find(item => item.id === currentPlayingId);
+                if (currentItem && globalAudioPlayer.src.includes('audio/')) {
+                    // Switch to online url
+                    globalAudioPlayer.src = currentItem.audio;
+                    globalAudioPlayer.play().catch(e => {
+                        console.error("Online audio fallback also failed or blocked.", e);
+                        updateAudioUI(currentPlayingId, false);
+                        currentPlayingId = null;
+                    });
+                } else {
+                    updateAudioUI(currentPlayingId, false);
+                    currentPlayingId = null;
+                }
+            });
+        }
+
+        function handleAudioPlay(id, onlineUrl) {
+            // Context Audio unlock
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (currentPlayingId === id) {
+                // If same audio clicked
+                if (globalAudioPlayer.paused) {
+                    globalAudioPlayer.play().catch(e => console.log("Play failed", e));
+                } else {
+                    globalAudioPlayer.pause();
+                }
+            } else {
+                // If a new audio card clicked
+                if (currentPlayingId) {
+                    // Turn off old playing card UI
+                    updateAudioUI(currentPlayingId, false);
+                }
+                
+                currentPlayingId = id;
+                
+                // Set path: Try local offline file first (audio/pagi-1.mp3)
+                // If local file doesn't exist, it will trigger error event and fall back to onlineUrl
+                globalAudioPlayer.src = `audio/${id}.mp3`;
+                globalAudioPlayer.load();
+                
+                globalAudioPlayer.play().catch(e => {
+                    // Direct play failed (e.g. file not found or browser blocked it).
+                    // Trigger load from online fallback directly
+                    console.log("Local file load failed or blocked, loading online fallback.");
+                    globalAudioPlayer.src = onlineUrl;
+                    globalAudioPlayer.load();
+                    globalAudioPlayer.play().catch(err => {
+                        alert("Gagal memutar audio. Pastikan Anda terhubung ke internet jika file audio offline tidak diunduh.");
+                        currentPlayingId = null;
+                    });
+                });
+            }
+        }
+
+        function stopAudio() {
+            if (!globalAudioPlayer.paused) {
+                globalAudioPlayer.pause();
+            }
+            if (currentPlayingId) {
+                updateAudioUI(currentPlayingId, false);
+                currentPlayingId = null;
+            }
+        }
+
+        function updateAudioUI(id, isPlaying) {
+            if (!id) return;
+            
+            const cardEl = document.getElementById(`card-${id}`);
+            const btnIconEl = document.getElementById(`audio-btn-icon-${id}`);
+            
+            if (cardEl) {
+                if (isPlaying) {
+                    cardEl.classList.add('active-audio-ring');
+                } else {
+                    cardEl.classList.remove('active-audio-ring');
+                }
+            }
+            
+            if (btnIconEl) {
+                if (isPlaying) {
+                    btnIconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>';
+                } else {
+                    btnIconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+                }
+            }
+        }
+
+        // Update top sticky progress bar
+        function updateProgressBar() {
+            const data = getActiveData();
+            const total = data.length;
+            let completed = 0;
+            
+            data.forEach(dzikir => {
+                if ((counts[dzikir.id] || 0) >= dzikir.target) {
+                    completed++;
+                }
+            });
+            
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            progressBar.style.width = `${percent}%`;
+            progressText.innerText = `Progres: ${completed}/${total} selesai`;
+            progressPercent.innerText = `${percent}%`;
+        }
+
+        // Local Storage state management
+        function saveProgress() {
+            localStorage.setItem('dzikir_counts', JSON.stringify(counts));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('dzikir_counts');
+            if (saved) {
+                try {
+                    counts = JSON.parse(saved);
+                } catch (e) {
+                    counts = {};
+                }
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('dzikir_settings', JSON.stringify(settings));
+            applySettings();
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('dzikir_settings');
+            if (saved) {
+                try {
+                    settings = {...settings, ...JSON.parse(saved)};
+                } catch (e) {}
+            }
+            
+            inputFontSize.value = settings.fontSize;
+            fontSizeLabel.innerText = `${settings.fontSize}px`;
+            
+            toggleLatin.checked = settings.showLatin;
+            toggleTranslation.checked = settings.showTranslation;
+            toggleBenefit.checked = settings.showBenefit;
+            toggleAutoScroll.checked = settings.autoScroll;
+            
+            applySettings();
+        }
+
+        function applySettings() {
+            if (settings.darkMode) {
+                document.documentElement.classList.add('dark');
+                themeIconText.innerText = "🌙 Gelap";
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIconText.innerText = "☀️ Terang";
+            }
+            
+            document.querySelectorAll('.arabic-text').forEach(el => {
+                el.style.fontSize = `${settings.fontSize}px`;
+            });
+            
+            document.querySelectorAll('.latin-text').forEach(el => {
+                if (settings.showLatin) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.translation-text').forEach(el => {
+                if (settings.showTranslation) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.benefit-box').forEach(el => {
+                if (settings.showBenefit) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        // Reset all counts
+        function resetAllCounts() {
+            if (confirm("Apakah Anda yakin ingin mengulang semua hitungan dari awal?")) {
+                const data = getActiveData();
+                data.forEach(dzikir => {
+                    counts[dzikir.id] = 0;
+                });
+                saveProgress();
+                renderDhikrList();
+                updateProgressBar();
+                
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            tabPagiBtn.addEventListener('click', () => switchTab('pagi'));
+            tabPetangBtn.addEventListener('click', () => switchTab('petang'));
+            
+            btnReset.addEventListener('click', resetAllCounts);
+            
+            btnSound.addEventListener('click', () => {
+                isSoundEnabled = !isSoundEnabled;
+                if (isSoundEnabled) {
+                    soundIconOn.classList.remove('hidden');
+                    soundIconOff.classList.add('hidden');
+                    playClickSound();
+                } else {
+                    soundIconOn.classList.add('hidden');
+                    soundIconOff.classList.remove('hidden');
+                }
+            });
+            
+            btnSettings.addEventListener('click', () => {
+                settingsDrawer.classList.remove('hidden');
+                setTimeout(() => {
+                    settingsContent.classList.remove('translate-y-full');
+                }, 10);
+            });
+            
+            const closeDrawer = () => {
+                settingsContent.classList.add('translate-y-full');
+                setTimeout(() => {
+                    settingsDrawer.classList.add('hidden');
+                }, 300);
+            };
+            
+            btnCloseSettings.addEventListener('click', closeDrawer);
+            settingsDrawer.addEventListener('click', (e) => {
+                if (e.target === settingsDrawer) closeDrawer();
+            });
+            
+            btnThemeToggle.addEventListener('click', () => {
+                settings.darkMode = !settings.darkMode;
+                saveSettings();
+            });
+            
+            inputFontSize.addEventListener('input', (e) => {
+                settings.fontSize = parseInt(e.target.value);
+                fontSizeLabel.innerText = `${settings.fontSize}px`;
+                applySettings();
+            });
+            
+            inputFontSize.addEventListener('change', () => {
+                saveSettings();
+            });
+            
+            toggleLatin.addEventListener('change', (e) => {
+                settings.showLatin = e.target.checked;
+                saveSettings();
+            });
+            
+            toggleTranslation.addEventListener('change', (e) => {
+                settings.showTranslation = e.target.checked;
+                saveSettings();
+            });
+
+            toggleBenefit.addEventListener('change', (e) => {
+                settings.showBenefit = e.target.checked;
+                saveSettings();
+            });
+
+            toggleAutoScroll.addEventListener('change', (e) => {
+                settings.autoScroll = e.target.checked;
+                saveSettings();
+            });
+        }
+    </script>
+
+    <!-- REGISTER SERVICE WORKER FOR PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((reg) => {
+                        console.log('PWA Service Worker registered successfully, scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.error('PWA Service Worker registration failed:', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

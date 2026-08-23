@@ -1,0 +1,22 @@
+{
+  "name": "Dzikir Pagi Petang Lengkap",
+  "short_name": "Dzikir Pagi Petang",
+  "description": "Aplikasi Dzikir Pagi dan Petang Lengkap, Berurutan, dengan Counter dan Audio Bacaan.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#10b981",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
