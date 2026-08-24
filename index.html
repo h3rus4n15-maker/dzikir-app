@@ -280,7 +280,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Dialah Allah, Yang Maha Esa. Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorang pun yang setara dengan Dia.",
                 benefit: "Membaca Al-Ikhlas, Al-Falaq, & An-Naas masing-masing 3x di waktu pagi & sore akan melindunginya dari segala sesuatu.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/112001.mp3"
+                audio: "https://server8.mp3quran.net/afs/112.mp3"
             },
             {
                 id: "pagi-3",
@@ -290,7 +290,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita penyihir yang meniup pada buhul-buhul, dan dari kejahatan pendengki apabila ia dengki.",
                 benefit: "Melindungi dari kejahatan fisik, sihir, dan kedengkian makhluk.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/113001.mp3"
+                audio: "https://server8.mp3quran.net/afs/113.mp3"
             },
             {
                 id: "pagi-4",
@@ -300,7 +300,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) setan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.",
                 benefit: "Melindungi diri dari bisikan setan dan gangguan manusia serta jin.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/114001.mp3"
+                audio: "https://server8.mp3quran.net/afs/114.mp3"
             },
             {
                 id: "pagi-5",
@@ -483,7 +483,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Dialah Allah, Yang Maha Esa. Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorang pun yang setara dengan Dia.",
                 benefit: "Membaca Al-Ikhlas, Al-Falaq, & An-Naas masing-masing 3x di waktu pagi & sore akan melindunginya dari segala sesuatu.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/112001.mp3"
+                audio: "https://server8.mp3quran.net/afs/112.mp3"
             },
             {
                 id: "petang-3",
@@ -493,7 +493,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita penyihir yang meniup pada buhul-buhul, dan dari kejahatan pendengki apabila ia dengki.",
                 benefit: "Melindungi dari kejahatan fisik, sihir, dan kedengkian makhluk.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/113001.mp3"
+                audio: "https://server8.mp3quran.net/afs/113.mp3"
             },
             {
                 id: "petang-4",
@@ -503,7 +503,7 @@
                 translation: "Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) setan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.",
                 benefit: "Melindungi diri dari bisikan setan dan gangguan manusia serta jin.",
                 target: 3,
-                audio: "https://everyayah.com/data/Alafasy_128kbps/114001.mp3"
+                audio: "https://server8.mp3quran.net/afs/114.mp3"
             },
             {
                 id: "petang-5",
@@ -656,6 +656,14 @@
                 audio: "https://www.emaanlibrary.com/wp-content/uploads/2024/08/Evening-Duas-By-Sheikh-Mishary-Rashid-Alafasy-مشاري-راشد-العفاسي-by-Shaheer203.mp3"
             }
         ];
+
+        const unavailableAudioSources = new Set([
+            "https://www.emaanlibrary.com/wp-content/uploads/2024/08/Morning-Duas-By-Sheikh-Mishary-Rashid-Alafasy-مشاري-راشد-العفاسي-in-Duas.mp3",
+            "https://www.emaanlibrary.com/wp-content/uploads/2024/08/Evening-Duas-By-Sheikh-Mishary-Rashid-Alafasy-مشاري-راشد-العفاسي-by-Shaheer203.mp3"
+        ]);
+        [...dataDzikirPagi, ...dataDzikirPetang].forEach((dzikir) => {
+            if (unavailableAudioSources.has(dzikir.audio)) dzikir.audio = null;
+        });
     </script>
 
     <!-- LOGIKA APLIKASI -->
@@ -782,7 +790,7 @@
                         </div>
                         <div class="flex items-center space-x-2">
                             <!-- Play Audio Button -->
-                            <button onclick="handleAudioPlay('${dzikir.id}', '${dzikir.audio}')" class="p-1.5 rounded-full text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Putar Suara">
+                            <button onclick="${dzikir.audio ? `handleAudioPlay('${dzikir.id}', '${dzikir.audio}')` : ''}" class="p-1.5 rounded-full text-slate-400 ${dzikir.audio ? 'hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' : 'opacity-40 cursor-not-allowed'} transition" title="${dzikir.audio ? 'Putar Suara' : 'Audio belum tersedia'}" ${dzikir.audio ? '' : 'disabled'}>
                                 <span id="audio-btn-icon-${dzikir.id}">
                                     ${isAudioPlaying 
                                         ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>' 
@@ -955,6 +963,8 @@
         }
 
         function handleAudioPlay(id, onlineUrl) {
+            if (!onlineUrl) return;
+
             // Context Audio unlock
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();

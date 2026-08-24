@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dzikir-app-cache-v2';
+const CACHE_NAME = 'dzikir-app-cache-v3';
 const ASSETS = [
   './',
   './index.html',
